@@ -1,0 +1,181 @@
+openapi: 3.0.1
+info:
+  title: Time bank
+  version: 1.0.0
+paths:
+  /users:
+    get:
+      summary: List all available users
+      operationId: findAllUsers
+      responses:
+        200:
+          description: list of all available users
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserList'
+  /user:
+    post:
+      summary: Add a new user to the list
+      operationId: adduser
+      requestBody:
+        description: User specification that will be added to the list
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewUser'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/password:
+    get:
+      summary: get single user by its identifier and password
+      operationId: findUserById
+      responses:
+        200:
+          description: A single user with specified password
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        404:
+          description: user with provided ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+  /services:
+    get:
+      summary: List all available services
+      operationId: findAllServices
+      responses:
+        200:
+          description: list of all available services
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServiceList'
+    post:
+      summary: Add a new service to the list
+      operationId: addservice
+      requestBody:
+        description: Service specification that will be added to the list
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewService'
+        required: true
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+  /services/{id}:
+    delete:
+      summary: Delete a single service by its identifier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      operationId: findServiceById
+      responses:
+        200:
+          description: A single service with specified ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        404:
+          description: Service with provided ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+    get:
+      summary: Find a single service by its identifier
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      operationId: findServiceByIds
+      responses:
+        200:
+          description: A single service with specified ID
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service'
+        404:
+          description: Service with provided ID not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorMessage'
+components:
+  schemas:
+    Service:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        producer:
+          type: integer
+          format: int64
+    ServiceList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Service'
+    NewService:
+      type: object
+      properties:
+        name:
+          type: string
+        producer:
+          type: integer
+          format: int64
+    ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        producer:
+          type: integer
+          format: int64
+    UserList:
+      type: array
+      items:
+        $ref: '#/components/schemas/User'
+    NewUser:
+      type: object
+      properties:
+        name:
+          type: string
+        producer:
+          type: integer
+          format: int64
+        message:
+          type: string

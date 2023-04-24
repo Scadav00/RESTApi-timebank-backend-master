@@ -1,0 +1,35 @@
+image: maven:3.8.6-eclipse-temurin-17-alpine
+stages:
+  - build
+  - deploy
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+
+cache:
+  paths:
+    - .m2/repository
+
+before_script:
+  - 'command -v ssh-agent >/dev/null || ( apk add --update openssh-client bash )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+
+build:
+  stage: build
+  script:
+    - 'mvn package'
+  artifacts:
+    paths:
+      - target/*.jar
+
+deploy:
+  stage: deploy
+  script:
+    - 'scp target/*.jar app@timebank-amber.btcmp.net:/opt/timebank-backend/'
+    - "ssh app@timebank-amber.btcmp.net 'sudo systemctl restart timebank-backend'"
+  when: manual
